@@ -8,7 +8,7 @@
  *   cache: 缓存时间(秒) - 默认 0
  */
 
-import { apiSuccess, apiError, buildAbsoluteUrl } from '../functions/utils/api-v1.js';
+import { apiSuccess, apiError, buildAbsoluteUrl } from '../../utils/api-v1.js';
 
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'heic', 'heif']);
 

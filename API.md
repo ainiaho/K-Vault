@@ -20,7 +20,7 @@ curl -L "https://k-vault-6m0.pages.dev/api/random-image?type=redirect"
 # 只返回指定格式
 curl "https://k-vault-6m0.pages.dev/api/random-image?ext=jpg"
 curl "https://k-vault-6m0.pages.dev/api/random-image?ext=png"
-curl "https://k-vault-6m0.pages.dev/api/random-image?ext=webp"
+curl "https://k-vault-6m0.pages.dev/api/random-image?ext=webp>"
 
 # 缓存（N 秒）
 curl "https://k-vault-6m0.pages.dev/api/random-image?cache=3600"
