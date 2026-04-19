@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
-const keyTargets = ['CONFIG_ENCRYPTION_KEY', 'SESSION_SECRET'];
+const keyTargets = ['CONFIG_ENCRYPTION_KEY', 'SESSION_SECRET', 'DEFAULT_API_TOKEN'];
 
 const placeholderValues = new Set([
   'replace_with_a_long_random_secret',

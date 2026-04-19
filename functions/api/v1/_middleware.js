@@ -1,9 +1,42 @@
 import {
+  createApiToken,
   parseBearerToken,
   touchApiTokenLastUsed,
   verifyApiToken,
 } from '../../utils/api-token.js';
 import { apiError } from '../../utils/api-v1.js';
+
+const DEFAULT_TOKEN_KEY = 'default_api_token:initialized';
+
+async function ensureDefaultApiToken(env) {
+  const defaultTokenSecret = String(env.DEFAULT_API_TOKEN || '').trim();
+  if (!defaultTokenSecret || !env.img_url) return;
+
+  try {
+    const existing = await env.img_url.get(DEFAULT_TOKEN_KEY, { type: 'json' });
+    if (existing?.initialized) return;
+  } catch {
+    const record = await env.img_url.getWithMetadata(DEFAULT_TOKEN_KEY);
+    if (record?.metadata?.initialized) return;
+  }
+
+  try {
+    await createApiToken(
+      {
+        name: 'Default API Token',
+        scopes: ['upload', 'read', 'delete', 'paste'],
+        expiresAt: null,
+        enabled: true,
+      },
+      env
+    );
+
+    await env.img_url.put(DEFAULT_TOKEN_KEY, 'initialized', { metadata: { initialized: true, createdAt: Date.now() } });
+    console.log('[bootstrap] Default API token created.');
+  } catch (error) {
+    console.warn('[bootstrap] Failed to create default API token:', error?.message);
+  }
+}
 
 function resolveRequiredScope(request) {
   const pathname = new URL(request.url).pathname.replace(/\/+$/, '');
@@ -30,6 +63,13 @@ function resolveRequiredScope(request) {
 export async function onRequest(context) {
   if (context.request.method === 'OPTIONS') {
     return context.next();
+  }
+
+  if (context.env?.DEFAULT_API_TOKEN && context.env?.img_url) {
+    const initPromise = ensureDefaultApiToken(context.env).catch(() => {});
+    if (typeof context.waitUntil === 'function') {
+      context.waitUntil(initPromise);
+    }
   }
 
   if (!context.env?.img_url) {

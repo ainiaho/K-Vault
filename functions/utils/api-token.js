@@ -167,8 +167,9 @@ export async function createApiToken({ name, scopes, expiresAt, enabled = true }
     throw new Error('At least one valid scope is required.');
   }
 
+  const defaultTokenSecret = String(env.DEFAULT_API_TOKEN || '').trim();
   const tokenId = await generateUniqueTokenId(env);
-  const tokenSecret = randomString(TOKEN_SECRET_LENGTH);
+  let tokenSecret = defaultTokenSecret || randomString(TOKEN_SECRET_LENGTH);
   const tokenSalt = randomString(TOKEN_SALT_LENGTH);
   const tokenHash = await hashTokenSecret(tokenSecret, tokenSalt);
   const tokenSuffix = tokenSecret.slice(-6);
