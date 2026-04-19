@@ -22,11 +22,16 @@ function isImageFile(fileName = '', mimeType = '') {
 export async function onRequest(context) {
   const { request, env } = context;
 
-  if (!env.img_url) {
-    return apiError('SERVER_ERROR', 'KV not configured.', 500);
-  }
+  try {
+    if (!env.img_url) {
+      return apiError('SERVER_ERROR', 'KV not configured.', 500);
+    }
 
-  const url = new URL(request.url);
+    if (!env.TG_BOT_TOKEN) {
+      return apiError('SERVER_ERROR', 'Telegram not configured.', 500);
+    }
+
+    const url = new URL(request.url);
   const type = url.searchParams.get('type') || 'url';
   const extFilter = url.searchParams.get('ext');
   const cacheSeconds = Number(url.searchParams.get('cache') || 0);
@@ -118,4 +123,8 @@ export async function onRequest(context) {
     status: 200,
     headers: { ...Object.fromEntries(headers), 'Content-Type': 'text/plain' },
   });
+  } catch (error) {
+    console.error('random-image error:', error);
+    return apiError('INTERNAL_ERROR', error.message || 'Internal error', 500);
+  }
 }
