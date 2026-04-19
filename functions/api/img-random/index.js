@@ -27,10 +27,6 @@ export async function onRequest(context) {
       return apiError('SERVER_ERROR', 'KV not configured.', 500);
     }
 
-    if (!env.TG_BOT_TOKEN) {
-      return apiError('SERVER_ERROR', 'Telegram not configured.', 500);
-    }
-
     const url = new URL(request.url);
   const type = url.searchParams.get('type') || 'url';
   const extFilter = url.searchParams.get('ext');
